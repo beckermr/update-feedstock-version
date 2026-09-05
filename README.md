@@ -1,4 +1,5 @@
 # update-feedstock-version
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/beckermr/update-feedstock-version/main.svg)](https://results.pre-commit.ci/latest/github/beckermr/update-feedstock-version/main)
 
 GitHub Action to update the version of a feedstock.
 
