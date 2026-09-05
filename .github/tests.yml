@@ -1,0 +1,25 @@
+name: update feedstock version
+on:
+  workflow_dispatch: null
+  push:
+    branches:
+      - main
+  pull_request: null
+
+concurrency:
+  group: cf-autotick-bot-test-package-feedstock
+  cancel-in-progress: false
+
+jobs:
+  update-feedstock-version:
+    runs-on: ubuntu-latest
+    name: update-feedstock-version
+    steps:
+      - name: run
+        uses: beckermr/update-feedstock-version@main
+        with:
+          feedstock: cf-autotick-bot-test-package-feedstock
+          version: "0.13"
+          # A GitHub personal access token is required
+          github-token: ${{ secrets.GITHUB_PAT }}
+          automerge: false
