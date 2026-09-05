@@ -1,0 +1,132 @@
+name: 'update-feedstock-version'
+description: 'GitHub Action to update the version of a feedstock.'
+author: Matthew R. Becker
+branding:
+  icon: 'rotate-cw'
+  color: 'green'
+
+inputs:
+  feedstock:
+    description: 'the name of the feedstock (e.g. "python-feedstock")'
+    required: true
+  version:
+    description: 'the new version'
+    required: true
+  github-token:
+    description: 'GitHub personal access token to use for making PRs'
+    required: true
+  automerge:
+    description: 'whether to enable automerge on the feedstock PR'
+    required: false
+    default: false
+
+outputs:
+  pull-request-number:
+    description: "the number of the PR that was opened"
+    value: ${{ steps.pr.outputs.pull-request-number }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: compute git user information
+      id: git-user
+      shell: bash -leo pipefail {0}
+      run: |
+        login=$(gh api user --jq '.login' || echo '')
+        if [[ "${login}" == *"status\":\"4"* ]]; then
+          login=''
+        fi
+        if [[ "${login}" == "" || "${login}" == "null" ]]; then
+          login='${{ github.actor }}'
+        fi
+
+        user_id=$(gh api user --jq '.id' || echo '')
+        if [[ "${user_id}" == *"status\":\"4"* ]]; then
+          user_id=''
+        fi
+        if [[ "${user_id}" == "" || "${user_id}" == "null" ]]; then
+          user_id='${{ github.actor_id }}'
+        fi
+        user_id="${user_id}+"
+
+        email=$(gh api user --jq '.email' || echo '')
+        if [[ "${email}" == *"status\":\"4"* ]]; then
+          email=''
+        fi
+        if [[ "${email}" == "" || "${email}" == "null" ]]; then
+          email=${user_id}${login}@users.noreply.github.com
+        fi
+
+        echo "login: ${login}"
+        echo "email: ${email}"
+
+        echo "user-name=${login}" >> "$GITHUB_OUTPUT"
+        echo "user-email=${email}" >> "$GITHUB_OUTPUT"
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+
+    - name: setup conda
+      if: ${{ steps.check.outputs.skip != 'true' }}
+      uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39  # v3.2.1
+      with:
+        environment-name: update-env
+        generate-run-shell: false
+        create-args: >-
+          python
+          conda-forge-tick
+          conda-forge-feedstock-ops
+        condarc: |
+          channels:
+            - conda-forge
+
+    - name: checkout feedstock
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+      with:
+        repository: conda-forge/${{ inputs.feedstock }}
+        token: ${{ inputs.github-token }}
+
+    - name: update feedstock
+      shell: bash -leo pipefail {0}
+      run: |
+        # update version
+        echo "::group::update version"
+        python ${{ github.action_path }}/update_version.py \
+          '${{ inputs.feedstock }}' \
+          '${{ inputs.version }}'
+        echo "::endgroup::"
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+
+    - name: create fork
+      id: create-fork
+      shell: bash -leo pipefail {0}
+      run: |
+        # create fork
+        gh repo fork conda-forge/${{ inputs.feedstock }} --clone=false
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+
+    - name: create the pull request
+      id: pr
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1
+      with:
+        commit-message: "chore: update version to ${{ inputs.version }}"
+        title: "chore: update version to ${{ inputs.version }}"
+        body: "This pull request updates the version to ${{ inputs.version }}."
+        branch: ${{ steps.git-user.outputs.user-name }}/version/${{ inputs.version }}
+        delete-branch: true
+        token: ${{ inputs.github-token }}
+        committer: '${{ steps.git-user.outputs.user-name }} <${{ steps.git-user.outputs.user-email }}>'
+        author: '${{ steps.git-user.outputs.user-name }} <${{ steps.git-user.outputs.user-email }}>'
+        push-to-fork: ${{ steps.git-user.outputs.user-name }}/${{ inputs.feedstock }}
+
+    - name: automerge
+      if: >-
+        inputs.automerge == 'true'
+        && steps.pr.outputs.pull-request-number != ''
+      shell: bash -leo pipefail {0}
+      run: |
+        # automerge
+        gh pr edit '${{ steps.pr.outputs.pull-request-number }}' --add-label 'automerge'
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
