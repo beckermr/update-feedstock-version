@@ -88,7 +88,7 @@ def main(feedstock_name, new_version):
         )
         if msg is not None:
             msg = "chore: update version to {new_version} & " + msg[len("chore: ") :]
-        print(f"commit-message={msg}" >> "$GITHUB_OUTPUT", flush=True)
+        print(f'echo "commit-message={msg}" >> "$GITHUB_OUTPUT"', flush=True)
 
     except Exception:
         LOGGER.exception("error while rerendering!")
