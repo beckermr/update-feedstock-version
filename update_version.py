@@ -23,6 +23,8 @@ def fold_log_lines(title):
             print("=" * 80, flush=True)
             print("=" * 80, flush=True)
             print("> " + title, flush=True)
+        sys.stdout.flush()
+        sys.stderr.flush()
         yield
     finally:
         sys.stdout.flush()
@@ -30,6 +32,8 @@ def fold_log_lines(title):
         if os.environ.get("GITHUB_ACTIONS", "false") == "true":
             LOG_LINES_FOLDED = False
             print("::endgroup::", flush=True)
+            sys.stdout.flush()
+            sys.stderr.flush()
 
 
 def main(feedstock_name, new_version):
