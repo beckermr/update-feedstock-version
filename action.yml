@@ -130,3 +130,9 @@ runs:
         gh pr edit '${{ steps.pr.outputs.pull-request-number }}' --add-label 'automerge'
       env:
         GH_TOKEN: ${{ inputs.github-token }}
+
+    - name: cleanup feedstock
+      if: always()
+      shell: bash -leo pipefail {0}
+      run: |
+        rm -rf ${{ github.workspace }}/${{ inputs.feedstock }}
