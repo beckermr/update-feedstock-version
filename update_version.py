@@ -14,7 +14,7 @@ LOG_LINES_FOLDED = False
 def _flush_io():
     sys.stdout.flush()
     sys.stderr.flush()
-    
+
 
 @contextlib.contextmanager
 def fold_log_lines(title, delay_time=2):
@@ -42,7 +42,7 @@ def fold_log_lines(title, delay_time=2):
             print("::endgroup::", flush=True)
             _flush_io()
             time.sleep(delay_time)
-        
+
         _flush_io()
 
 
