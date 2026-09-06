@@ -15,10 +15,17 @@ jobs:
     runs-on: ubuntu-latest
     name: update-feedstock-version
     steps:
-      - name: run
+      - name: update feedstock version
+        id: update
         uses: $/
         with:
           feedstock: cf-autotick-bot-test-package-feedstock
           version: "0.13"
           github-token: ${{ secrets.GH_PAT }}
           automerge: false
+
+      - name: close pr
+        run: |
+          gh pr close ${{ steps.update.outputs.pull-request-number }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
