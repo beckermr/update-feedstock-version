@@ -31,10 +31,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
 
-      - name: what is left?
-        run: |
-          ls -lah
-
       - name: checkout fork
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
