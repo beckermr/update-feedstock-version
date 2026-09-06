@@ -49,10 +49,6 @@ def main(feedstock_name, new_version):
     from conda_forge_tick.update_recipe.version import update_version_feedstock_dir
     from conda_forge_tick.utils import setup_logging
 
-    # TODO: remove once bug is fixed upstream
-    # https://github.com/conda-forge/conda-forge-bot/pull/6661
-    os.environ["CF_FEEDSTOCK_OPS_IN_CONTAINER"] = "true"
-
     setup_logging()
 
     with fold_log_lines("computing feedstock attributes"):
