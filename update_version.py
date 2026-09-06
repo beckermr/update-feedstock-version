@@ -1,73 +1,23 @@
-import contextlib
 import logging
-import os
-import pprint
 import subprocess
 import sys
-import time
 from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
-LOG_LINES_FOLDED = False
 
 
-@contextlib.contextmanager
-def fold_log_lines(title):
-    global LOG_LINES_FOLDED
-    try:
-        sys.stdout.flush()
-        sys.stderr.flush()
-        if os.environ.get("GITHUB_ACTIONS", "false") == "true" and not LOG_LINES_FOLDED:
-            LOG_LINES_FOLDED = True
-            print(f"::group::{title}", flush=True)
-        else:
-            print("=" * 80, flush=True)
-            print("=" * 80, flush=True)
-            print("> " + title, flush=True)
-        sys.stdout.flush()
-        sys.stderr.flush()
-        time.sleep(1)
-        yield
-    finally:
-        sys.stdout.flush()
-        sys.stderr.flush()
-        if os.environ.get("GITHUB_ACTIONS", "false") == "true":
-            LOG_LINES_FOLDED = False
-            print("::endgroup::", flush=True)
-            sys.stdout.flush()
-            sys.stderr.flush()
-            time.sleep(1)
-
-
-def main(feedstock_name, new_version):
+def main(task, feedstock_name, new_version):
     # these imports are guarded here in this function since the
     # conda_forge_tick package will hide sensitive env vars
     import conda_forge_tick.update_recipe
     from conda_forge_feedstock_ops.rerender import rerender as cf_feedstock_ops_rerender
-    from conda_forge_tick.feedstock_parser import load_feedstock
     from conda_forge_tick.update_recipe import v1_recipe
     from conda_forge_tick.update_recipe.version import update_version_feedstock_dir
     from conda_forge_tick.utils import setup_logging
 
-    # TODO: remove once bug is fixed upstream
-    # https://github.com/conda-forge/conda-forge-bot/pull/6661
-    os.environ["CF_FEEDSTOCK_OPS_IN_CONTAINER"] = "true"
-
     setup_logging()
 
-    with fold_log_lines("computing feedstock attributes"):
-        try:
-            name = feedstock_name.rsplit("-", 1)[0]
-            LOGGER.info("using feedstock name %s", name)
-            attrs = load_feedstock(name, {}, use_container=False)
-            LOGGER.info("feedstock attrs:\n%s\n", pprint.pformat(attrs))
-        except Exception:
-            LOGGER.exception("error while computing feedstock attributes!")
-            sys.exit(1)
-
-    with fold_log_lines(
-        f"updating version {attrs.get('version', 'null')} -> {new_version}"
-    ):
+    if task == "update-version":
         try:
             updated, errors = update_version_feedstock_dir(
                 feedstock_name,
@@ -80,7 +30,6 @@ def main(feedstock_name, new_version):
             LOGGER.exception("error while updating the recipe version!")
             sys.exit(1)
 
-    with fold_log_lines("resetting the build number"):
         try:
             workdir = Path(feedstock_name)
             meta_yaml_path = workdir.joinpath("recipe", "meta.yaml")
@@ -104,7 +53,7 @@ def main(feedstock_name, new_version):
             LOGGER.exception("error while resetting the recipe build number!")
             sys.exit(1)
 
-    with fold_log_lines("rerendering the feedstock"):
+    elif task == "rerender":
         try:
             msg = cf_feedstock_ops_rerender(
                 feedstock_name,
@@ -124,7 +73,9 @@ def main(feedstock_name, new_version):
         except Exception:
             LOGGER.exception("error while rerendering!")
             sys.exit(1)
+    else:
+        raise RuntimeError(f"Task {task} not recognized!")
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], sys.argv[3])
