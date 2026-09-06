@@ -1,0 +1,48 @@
+name: tests
+on:
+  workflow_dispatch: null
+  push:
+    branches:
+      - main
+  pull_request: null
+
+concurrency:
+  group: cf-autotick-bot-test-package-feedstock
+  cancel-in-progress: false
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    name: tests
+    steps:
+      - name: update feedstock version
+        id: update
+        uses: $/
+        with:
+          feedstock: cf-autotick-bot-test-package-feedstock
+          version: "0.13"
+          github-token: ${{ secrets.GH_PAT }}
+          automerge: false
+
+      - name: close pr
+        run: |
+          gh pr close \
+          https://github.com/conda-forge/cf-autotick-bot-test-package-feedstock/pull/${{ steps.update.outputs.pull-request-number }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
+      - name: checkout fork
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: beckermr/cf-autotick-bot-test-package-feedstock
+          path: cf-autotick-bot-test-package-feedstock
+          token: ${{ secrets.GH_PAT }}
+
+      - name: delete pr branch
+        run: |
+          pushd cf-autotick-bot-test-package-feedstock
+          git push origin --delete beckermr/version/0.13
+          popd
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
