@@ -73,7 +73,7 @@ runs:
         generate-run-shell: false
         create-args: >-
           python
-          conda-forge-tick
+          conda-forge-tick >=2026.9.32
           conda-forge-feedstock-ops
         condarc: |
           channels:
