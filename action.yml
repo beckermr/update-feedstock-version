@@ -83,6 +83,7 @@ runs:
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       with:
         repository: conda-forge/${{ inputs.feedstock }}
+        path: ${{ github.workspace }}/${{ inputs.feedstock }}
         token: ${{ inputs.github-token }}
 
     - name: update feedstock
@@ -110,11 +111,12 @@ runs:
       id: pr
       uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1
       with:
+        path: ${{ inputs.feedstock }}
+        branch: ${{ steps.git-user.outputs.user-name }}/version/${{ inputs.version }}
+        delete-branch: true
         commit-message: "chore: update version to ${{ inputs.version }}"
         title: "chore: update version to ${{ inputs.version }}"
         body: "This pull request updates the version to ${{ inputs.version }}."
-        branch: ${{ steps.git-user.outputs.user-name }}/version/${{ inputs.version }}
-        delete-branch: true
         token: ${{ inputs.github-token }}
         committer: '${{ steps.git-user.outputs.user-name }} <${{ steps.git-user.outputs.user-email }}>'
         author: '${{ steps.git-user.outputs.user-name }} <${{ steps.git-user.outputs.user-email }}>'
