@@ -4,6 +4,7 @@ import os
 import pprint
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ def fold_log_lines(title):
             print("> " + title, flush=True)
         sys.stdout.flush()
         sys.stderr.flush()
+        time.sleep(1)
         yield
     finally:
         sys.stdout.flush()
@@ -34,6 +36,7 @@ def fold_log_lines(title):
             print("::endgroup::", flush=True)
             sys.stdout.flush()
             sys.stderr.flush()
+            time.sleep(1)
 
 
 def main(feedstock_name, new_version):
@@ -53,11 +56,9 @@ def main(feedstock_name, new_version):
     setup_logging()
 
     with fold_log_lines("computing feedstock attributes"):
-        name = feedstock_name.rsplit("-", 1)[0]
-        LOGGER.info("using feedstock name %s", name)
-
         try:
-            LOGGER.info("computing feedstock attributes")
+            name = feedstock_name.rsplit("-", 1)[0]
+            LOGGER.info("using feedstock name %s", name)
             attrs = load_feedstock(name, {}, use_container=False)
             LOGGER.info("feedstock attrs:\n%s\n", pprint.pformat(attrs))
         except Exception:
@@ -68,11 +69,6 @@ def main(feedstock_name, new_version):
         f"updating version {attrs.get('version', 'null')} -> {new_version}"
     ):
         try:
-            LOGGER.info(
-                "updating version %s -> %s",
-                attrs.get("version", "null"),
-                new_version,
-            )
             updated, errors = update_version_feedstock_dir(
                 feedstock_name,
                 str(new_version),
@@ -86,9 +82,6 @@ def main(feedstock_name, new_version):
 
     with fold_log_lines("resetting the build number"):
         try:
-            LOGGER.info(
-                "resetting the build number",
-            )
             workdir = Path(feedstock_name)
             meta_yaml_path = workdir.joinpath("recipe", "meta.yaml")
             recipe_yaml_path = workdir.joinpath("recipe", "recipe.yaml")
@@ -113,9 +106,6 @@ def main(feedstock_name, new_version):
 
     with fold_log_lines("rerendering the feedstock"):
         try:
-            LOGGER.info(
-                "rerendering",
-            )
             msg = cf_feedstock_ops_rerender(
                 feedstock_name,
                 timeout=None,
