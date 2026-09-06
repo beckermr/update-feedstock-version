@@ -91,7 +91,7 @@ runs:
       run: |
         # update version
         ls -lah
-        
+
         echo "::group::update version"
         python ${{ github.action_path }}/update_version.py \
           '${{ inputs.feedstock }}' \
@@ -113,13 +113,13 @@ runs:
       id: pr
       uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1
       with:
+        token: ${{ inputs.github-token }}
         path: ${{ inputs.feedstock }}
         branch: ${{ steps.git-user.outputs.user-name }}/version/${{ inputs.version }}
         delete-branch: true
         commit-message: "chore: update version to ${{ inputs.version }}"
         title: "chore: update version to ${{ inputs.version }}"
         body: "This pull request updates the version to ${{ inputs.version }}."
-        token: ${{ inputs.github-token }}
         committer: '${{ steps.git-user.outputs.user-name }} <${{ steps.git-user.outputs.user-email }}>'
         author: '${{ steps.git-user.outputs.user-name }} <${{ steps.git-user.outputs.user-email }}>'
         push-to-fork: ${{ steps.git-user.outputs.user-name }}/${{ inputs.feedstock }}
