@@ -86,7 +86,7 @@ runs:
         path: ${{ github.workspace }}/${{ inputs.feedstock }}
         token: ${{ inputs.github-token }}
 
-    - name: updating version to $${{ inputs.version }}
+    - name: updating version to ${{ inputs.version }}
       shell: bash -leo pipefail {0}
       run: |
         # update version to $${{ inputs.version }}
