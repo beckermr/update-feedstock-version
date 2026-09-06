@@ -1,6 +1,7 @@
 import logging
 import os
 import pprint
+import subprocess
 import sys
 from pathlib import Path
 
@@ -88,7 +89,11 @@ def main(feedstock_name, new_version):
         )
         if msg is not None:
             msg = "chore: update version to {new_version} & " + msg[len("chore: ") :]
-        print(f'echo "commit-message={msg}" >> "$GITHUB_OUTPUT"', flush=True)
+        subprocess.run(
+            f'echo "commit-message={msg}" >> "$GITHUB_OUTPUT"',
+            shell=True,
+            check=True,
+        )
 
     except Exception:
         LOGGER.exception("error while rerendering!")
