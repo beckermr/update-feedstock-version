@@ -90,13 +90,9 @@ runs:
       shell: bash -leo pipefail {0}
       run: |
         # update version
-        ls -lah
-
-        echo "::group::update version"
         python ${{ github.action_path }}/update_version.py \
           '${{ inputs.feedstock }}' \
           '${{ inputs.version }}'
-        echo "::endgroup::"
       env:
         GH_TOKEN: ${{ inputs.github-token }}
 
