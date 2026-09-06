@@ -1,9 +1,8 @@
 import logging
+import os
 import pprint
 import sys
 from pathlib import Path
-
-from conda_forge_feedstock_ops.rerender import rerender as cf_feedstock_ops_rerender
 
 LOGGER = logging.getLogger(__name__)
 
@@ -12,10 +11,15 @@ def main(feedstock_name, new_version):
     # these imports are guarded here in this function since the
     # conda_forge_tick package will hide sensitive env vars
     import conda_forge_tick.update_recipe
+    from conda_forge_feedstock_ops.rerender import rerender as cf_feedstock_ops_rerender
     from conda_forge_tick.feedstock_parser import load_feedstock
     from conda_forge_tick.update_recipe import v1_recipe
     from conda_forge_tick.update_recipe.version import update_version_feedstock_dir
     from conda_forge_tick.utils import setup_logging
+
+    # TODO: remove once bug is fixed upstream
+    # https://github.com/conda-forge/conda-forge-bot/pull/6661
+    os.environ["CF_FEEDSTOCK_OPS_IN_CONTAINER"] = "true"
 
     setup_logging()
 

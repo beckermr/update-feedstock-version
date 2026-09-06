@@ -16,7 +16,7 @@ jobs:
     name: update-feedstock-version
     steps:
       - name: run
-        uses: beckermr/update-feedstock-version@main
+        uses: $/
         with:
           feedstock: cf-autotick-bot-test-package-feedstock
           version: "0.13"
