@@ -20,6 +20,5 @@ jobs:
         with:
           feedstock: cf-autotick-bot-test-package-feedstock
           version: "0.13"
-          # A GitHub personal access token is required
-          github-token: ${{ secrets.GITHUB_PAT }}
+          github-token: ${{ secrets.GH_PAT }}
           automerge: false
