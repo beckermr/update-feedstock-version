@@ -11,32 +11,39 @@ LOGGER = logging.getLogger(__name__)
 LOG_LINES_FOLDED = False
 
 
+def _flush_io():
+    sys.stdout.flush()
+    sys.stderr.flush()
+    
+
 @contextlib.contextmanager
-def fold_log_lines(title):
+def fold_log_lines(title, delay_time=2):
     global LOG_LINES_FOLDED
     try:
-        sys.stdout.flush()
-        sys.stderr.flush()
+        _flush_io()
+
         if os.environ.get("GITHUB_ACTIONS", "false") == "true" and not LOG_LINES_FOLDED:
             LOG_LINES_FOLDED = True
             print(f"::group::{title}", flush=True)
+            _flush_io()
+            time.sleep(delay_time)
         else:
             print("=" * 80, flush=True)
             print("=" * 80, flush=True)
             print("> " + title, flush=True)
-        sys.stdout.flush()
-        sys.stderr.flush()
-        time.sleep(1)
+
+        _flush_io()
         yield
     finally:
-        sys.stdout.flush()
-        sys.stderr.flush()
+        _flush_io()
+
         if os.environ.get("GITHUB_ACTIONS", "false") == "true":
             LOG_LINES_FOLDED = False
             print("::endgroup::", flush=True)
-            sys.stdout.flush()
-            sys.stderr.flush()
-            time.sleep(1)
+            _flush_io()
+            time.sleep(delay_time)
+        
+        _flush_io()
 
 
 def main(feedstock_name, new_version):
