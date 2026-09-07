@@ -41,7 +41,7 @@ jobs:
       - name: delete pr branch
         run: |
           pushd cf-autotick-bot-test-package-feedstock
-          git push origin --delete beckermr/version/0.13
+          git push origin --delete beckermr/update-feedstock-version
           popd
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}

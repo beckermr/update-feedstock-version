@@ -73,9 +73,8 @@ runs:
         generate-run-shell: false
         create-args: >-
           python
-          conda-forge-tick>=2026.9.32
-          conda-forge-feedstock-ops
-          pydantic>=2.13
+          conda-forge-tick>=2026.9.38
+          conda-forge-feedstock-ops>=0.19.1
         condarc: |
           channels:
             - conda-forge
@@ -124,7 +123,7 @@ runs:
       with:
         token: ${{ inputs.github-token }}
         path: ${{ inputs.feedstock }}
-        branch: ${{ steps.git-user.outputs.user-name }}/version/${{ inputs.version }}
+        branch: ${{ steps.git-user.outputs.user-name }}/update-feedstock-version
         delete-branch: true
         commit-message: "chore: update version to ${{ inputs.version }}"
         title: "chore: update version to ${{ inputs.version }}"
