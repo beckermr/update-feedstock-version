@@ -124,7 +124,7 @@ runs:
       with:
         token: ${{ inputs.github-token }}
         path: ${{ inputs.feedstock }}
-        branch: ${{ steps.git-user.outputs.user-name }}/version/${{ inputs.version }}
+        branch: ${{ steps.git-user.outputs.user-name }}/update-feedstock-version
         delete-branch: true
         commit-message: "chore: update version to ${{ inputs.version }}"
         title: "chore: update version to ${{ inputs.version }}"
