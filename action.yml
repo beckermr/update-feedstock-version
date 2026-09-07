@@ -75,6 +75,7 @@ runs:
           python
           conda-forge-tick>=2026.9.32
           conda-forge-feedstock-ops
+          pydantic>=2.13
         condarc: |
           channels:
             - conda-forge
