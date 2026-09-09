@@ -83,7 +83,7 @@ runs:
     - name: updating version to ${{ inputs.version }}
       shell: bash -leo pipefail {0}
       run: |
-        # update version to $${{ inputs.version }}
+        # update version to ${{ inputs.version }}
         python ${{ github.action_path }}/update_version.py \
           update-version \
           '${{ inputs.feedstock }}' \
