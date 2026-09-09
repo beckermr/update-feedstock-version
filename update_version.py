@@ -8,18 +8,18 @@ LOGGER = logging.getLogger(__name__)
 
 def main(task, feedstock_name, new_version):
     # these imports are guarded here in this function since the
-    # conda_forge_tick package will hide sensitive env vars
-    import conda_forge_tick.update_recipe
     from conda_forge_feedstock_ops.rerender import rerender as cf_feedstock_ops_rerender
-    from conda_forge_tick.update_recipe import v1_recipe
-    from conda_forge_tick.update_recipe.version import update_version_feedstock_dir
-    from conda_forge_tick.utils import setup_logging
+    from conda_forge_feedstock_ops.update_build_number import update_build_number
+    from conda_forge_feedstock_ops.update_version import update_version
 
-    setup_logging()
+    logging.basicConfig(
+            format="%(asctime)-15s %(levelname)-8s %(name)s@%(filename)s:%(lineno)d || %(message)s",
+            level=logging.INFO,
+        )
 
     if task == "update-version":
         try:
-            updated, errors = update_version_feedstock_dir(
+            updated, errors = update_version(
                 feedstock_name,
                 str(new_version),
                 use_container=False,
@@ -35,18 +35,15 @@ def main(task, feedstock_name, new_version):
             meta_yaml_path = workdir.joinpath("recipe", "meta.yaml")
             recipe_yaml_path = workdir.joinpath("recipe", "recipe.yaml")
             if meta_yaml_path.exists():
-                new_meta_yaml = meta_yaml_path.read_text()
-                new_meta_yaml = conda_forge_tick.update_recipe.update_build_number(
-                    new_meta_yaml,
+                update_build_number(
+                    meta_yaml_path,
                     0,
                 )
-                meta_yaml_path.write_text(new_meta_yaml)
             elif recipe_yaml_path.exists():
-                new_recipe_yaml = v1_recipe.update_build_number(
+                update_build_number(
                     recipe_yaml_path,
                     0,
                 )
-                recipe_yaml_path.write_text(new_recipe_yaml)
             else:
                 raise FileNotFoundError("Could not find meta.yaml or recipe.yaml!")
         except Exception:
