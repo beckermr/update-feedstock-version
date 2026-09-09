@@ -1,0 +1,7 @@
+name: udpate-env
+channels:
+  - conda-forge
+platforms:
+  - linux-64
+dependencies:
+  - conda-forge-feedstock-ops >=0.20.0

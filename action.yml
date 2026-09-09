@@ -70,10 +70,8 @@ runs:
       uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39  # v3.2.1
       with:
         environment-name: update-env
+        environment-file: conda-lock.yml
         generate-run-shell: false
-        create-args: >-
-          python
-          conda-forge-feedstock-ops>=0.20.0
         condarc: |
           channels:
             - conda-forge
