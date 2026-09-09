@@ -13,9 +13,9 @@ def main(task, feedstock_name, new_version):
     from conda_forge_feedstock_ops.update_version import update_version
 
     logging.basicConfig(
-            format="%(asctime)-15s %(levelname)-8s %(name)s@%(filename)s:%(lineno)d || %(message)s",
-            level=logging.INFO,
-        )
+        format="%(asctime)-15s %(levelname)-8s %(name)s@%(filename)s:%(lineno)d || %(message)s",
+        level=logging.INFO,
+    )
 
     if task == "update-version":
         try:
