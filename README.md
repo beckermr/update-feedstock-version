@@ -1,4 +1,5 @@
 # update-feedstock-version
+
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/beckermr/update-feedstock-version/main.svg)](https://results.pre-commit.ci/latest/github/beckermr/update-feedstock-version/main) [![tests](https://github.com/beckermr/update-feedstock-version/actions/workflows/tests.yml/badge.svg)](https://github.com/beckermr/update-feedstock-version/actions/workflows/tests.yml)
 
 GitHub Action to update the version of a feedstock.
@@ -43,9 +44,9 @@ For classic tokens, you need read/write permissions for the the `repo` and `work
 
 ### Fine-grained Tokens
 
-For fine-grained tokens, you need to generate two tokens with different scopes and pass them to different inputs. These are detailed in the table below.
+For fine-grained tokens, you need to generate two tokens with different scopes and pass them to different inputs. You also need to have an existing fork of the target feedstock. The token persmissions are as follows:
 
-| Action Input Parameter  | Allowed Repository         | Scopes (permissions)                             |
-| ----------------------- | -------------------------- | ------------------------------------------------ |
-| `github-token`          | upstream feedstock         | pull_request (read/write)                        |
-| `github-token-for-fork` | your fork of the feedstock | contents (read/write), workflows (read/write)    |
+| Action Input Parameter  | Allowed Repositories         | Repository Scopes (permissions)               |
+| ----------------------- | ---------------------------- | --------------------------------------------- |
+| `github-token`          | upstream feedstock           | pull_request (read/write)                     |
+| `github-token-for-fork` | your fork of the feedstock   | contents (read/write), workflows (read/write) |

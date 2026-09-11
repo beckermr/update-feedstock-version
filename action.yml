@@ -110,14 +110,14 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
 
-    - name: create fork
-      # if: ${{ inputs.github-token-for-fork == '' }}
+    - name: create fork (if needed)
+      if: ${{ inputs.github-token-for-fork == '' }}
       shell: bash -leo pipefail {0}
       run: |
-        # create fork again
+        # create fork (if needed)
         gh repo fork conda-forge/${{ inputs.feedstock }} --clone=false
       env:
-        GH_TOKEN: ${{ inputs.github-token-for-fork }}
+        GH_TOKEN: ${{ inputs.github-token }}
 
     - name: create the pull request
       id: pr
