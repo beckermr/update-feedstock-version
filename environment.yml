@@ -4,4 +4,4 @@ channels:
 platforms:
   - linux-64
 dependencies:
-  - conda-forge-feedstock-ops >=0.20.1
+  - conda-forge-feedstock-ops >=0.20.2
