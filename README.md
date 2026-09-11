@@ -27,7 +27,6 @@ jobs:
         with:
           feedstock: <name of feedstock>-feedstock
           version: ${{ inputs.version }}
-          # A GitHub personal access token is required
           github-token: ${{ secrets.GITHUB_PAT }}
           automerge: true
 ```
@@ -35,3 +34,17 @@ jobs:
 Then you can trigger the version update by dispatching the workflow in the UI. It is also possible to trigger the workflow on GitHub release events.
 
 See the [action.yml](action.yml) for details on possible inputs and options.
+
+## Required Token Permissions and Scopes
+
+### Classic Tokens
+
+For classic tokens, you need read/write permissions for the the `repo` and `workflow` scopes. For classic tokens, you pass the token to the `github-token` input.
+
+### Fine-grained Tokens
+
+For fine-grained tokens, you need to generate two tokens with different scopes and pass them to different inputs. These are detailed in the table below.
+
+| Action Input Parameter | Scopes (permissions) | Allowed Repository |
+| ---------------------- | -------------------- | ------------------ |
+|

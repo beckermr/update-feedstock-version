@@ -13,12 +13,20 @@ inputs:
     description: 'the new version'
     required: true
   github-token:
-    description: 'GitHub personal access token to use for making PRs'
+    description: 'GitHub personal access token to use for making PRs on the feedstock'
     required: true
   automerge:
     description: 'whether to enable automerge on the feedstock PR'
     required: false
     default: false
+  branch:
+    description: 'branch name to use for PR'
+    required: false
+    default: ''
+  github-token-for-fork:
+    description: 'GitHub personal access token to use for making commits to the fork of the feedstock'
+    required: false
+    default: ''
 
 outputs:
   pull-request-number:
@@ -116,8 +124,9 @@ runs:
       uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1
       with:
         token: ${{ inputs.github-token }}
+        branch-token: ${{ case(inputs.github-token-for-fork == '', inputs.github-token, inputs.github-token-for-fork) }}
         path: ${{ inputs.feedstock }}
-        branch: ${{ steps.git-user.outputs.user-name }}/update-feedstock-version
+        branch: ${{ case(inputs.branch == '', format('{0}/update-feedstock-version', steps.git-user.outputs.user-name), inputs.branch) }}
         delete-branch: true
         commit-message: "chore: update version to ${{ inputs.version }}"
         title: "chore: update version to ${{ inputs.version }}"
