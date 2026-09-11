@@ -114,7 +114,7 @@ runs:
       # if: ${{ inputs.github-token-for-fork == '' }}
       shell: bash -leo pipefail {0}
       run: |
-        # create fork
+        # create fork again
         gh repo fork conda-forge/${{ inputs.feedstock }} --clone=false
       env:
         GH_TOKEN: ${{ inputs.github-token-for-fork }}
