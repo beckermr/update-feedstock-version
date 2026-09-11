@@ -45,7 +45,7 @@ For classic tokens, you need read/write permissions for the the `repo` and `work
 
 For fine-grained tokens, you need to generate two tokens with different scopes and pass them to different inputs. These are detailed in the table below.
 
-| Action Input Parameter  | Allowed Repository         | Scopes (permissions)      |
-| ----------------------- | -------------------------- | ------------------------- |
-| `github-token`          | upstream feedstock         | pull_request (read/write) |
-| `github-token-for-fork` | your fork of the feedstock | contents (read/write)     |
+| Action Input Parameter  | Allowed Repository         | Scopes (permissions)                             |
+| ----------------------- | -------------------------- | ------------------------------------------------ |
+| `github-token`          | upstream feedstock         | pull_request (read/write)                        |
+| `github-token-for-fork` | your fork of the feedstock | contents (read/write), workflows (read/write)    |
