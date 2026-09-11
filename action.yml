@@ -111,7 +111,7 @@ runs:
         GH_TOKEN: ${{ inputs.github-token }}
 
     - name: create fork
-      id: create-fork
+      if: ${{ inputs.github-token-for-fork == '' }}
       shell: bash -leo pipefail {0}
       run: |
         # create fork
